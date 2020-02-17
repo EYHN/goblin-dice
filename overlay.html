@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+      *, *::after, *::before {
+        box-sizing: border-box;
+      }
+      body::after {
+        display: block;
+        content: '';
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border: 8px solid;
+        border-color: transparent rgba(127, 127, 127, 0.3) rgba(127, 127, 127, 0.3) transparent;
+        background: rgba(127, 127, 127, 0.1);
+      }
+      .container {
+        height: 100%;
+        width: 100%;
+        border-style: solid;
+        border-width: 67px 37px 18px 37px;
+        -moz-border-image: url(images/overlay.png) 67 37 18 37 repeat;
+        -webkit-border-image: url(images/overlay.png) 67 37 18 37 repeat;
+        -o-border-image: url(images/overlay.png) 67 37 18 37 repeat;
+        border-image: url(images/overlay.png) 67 37 18 37 fill repeat;
+        position: relative;
+        display: flex;
+      }
+      .left-pad {
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-left: -8px;
+        padding-left: 8px;
+        padding-right: 16px;
+        flex-basis: 150px;
+      }
+      .hr-pad {
+        border-left: 1px solid rgb(186, 151, 97);
+      }
+      .right-pad {
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-left: -8px;
+        padding-left: 24px;
+        flex-grow: 1;
+      }
+      html {
+        background-position: bottom right;
+        background-repeat: no-repeat;
+        box-sizing: border-box;
+        height: 100%;
+        overflow: hidden;
+        color: rgb(177, 167, 147);
+        font-size: 14px;
+        font-family: "Microsoft YaHei",微软雅黑,"MicrosoftJhengHei",华文细黑,STHeiti,MingLiu;
+        font-weight: 500;
+      }
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      .title {
+        position: absolute;
+        color: white;
+        font-weight: 500;
+        font-size: 13.5px;
+        top: -54px;
+        left: -20px;
+        opacity: 0.6;
+        margin: 0;
+      }
+      .checkbox-group {
+        list-style: none;
+        padding: 0;
+        margin: 0px;
+      }
+      .checkbox-group li {
+        line-height: 1.6;
+      }
+      .textinput {
+        width: 50px;
+      }
+      .grouptitle {
+        color: rgba(255,255,255,0.7);
+        font-size: 14px;
+        margin: 0;
+        margin-left: -6px;
+        font-weight: 500;
+        padding: 12px 0 6px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        padding: 0 6px;
+      }
+      thead {
+        color: rgb(177, 167, 147);
+        font-size: 0.9em;
+        border-bottom: 1px dashed #777;
+      }
+      tbody {
+        color: rgba(255,255,255,0.6)
+      }
+      td, th {
+        font-weight: 500;
+        padding: 6px 0px;
+        text-align: center;
+      }
+      tr:nth-child(even){
+        background:rgba(255,255,255,0.1);
+      }
+      button {
+        border-radius: 3px;
+        box-shadow: 0px 1.5px 4px #000;
+        background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.0));
+        border: none;
+        outline: none;
+        color: rgb(177, 167, 147);
+        line-height: 24px;
+        padding: 0px 20px;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .clear-button {
+        float: right;
+        margin-top: -2px;
+      }
+      .test-button {
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h4 class="title">哥布林的骰子</h4>
+      <div class="left-pad">
+        <form id="config-form" onsubmit="return false;">
+          <h5 class="grouptitle">鲶鱼精邮差</h5>
+          <label for="serverport">端口：</label><input class="textinput" type="number" id="serverport" value="" />
+          <button id="test-connect" class="test-button">测试连接</button>
+          <h5 class="grouptitle">启用频道</h5>
+          <ul class="checkbox-group">
+            <li>
+              <input type="checkbox" id="allow-s" value="说话">
+              <label for="allow-s">说话</label>
+            </li>
+            <li>
+              <input type="checkbox" id="allow-p" value="小队">
+              <label for="allow-p">小队</label>
+            </li>
+            <li>
+              <input type="checkbox" id="allow-y" value="呼喊">
+              <label for="allow-y">呼喊</label>
+            </li>
+            <li>
+              <input type="checkbox" id="allow-sh" value="喊话">
+              <label for="allow-sh">喊话</label>
+            </li>
+            <li>
+              <input type="checkbox" id="allow-fc" value="部队">
+              <label for="allow-fc">部队</label>
+            </li>
+            <li>
+              <input type="checkbox" id="allow-e" value="默语">
+              <label for="allow-e">默语</label>
+            </li>
+            <li>
+              <input type="checkbox" id="allow-t" value="私聊">
+              <label for="allow-t">私聊</label>
+            </li>
+          </ul>
+          <h5 class="grouptitle">输出频道</h5>
+          <div class="select-group">
+            <select id="output-channel">
+              <option value="说话">说话</option>
+              <option value="小队">小队</option>
+              <option value="呼喊">呼喊</option>
+              <option value="喊话">喊话</option>
+              <option value="部队">部队</option>
+              <option value="默语">默语</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="hr-pad"></div>
+      <div class="right-pad">
+        <h5 class="grouptitle">San 值<button id="clear-san" class="clear-button">清空</button></h5>
+        <table id="san">
+          <thead>
+            <tr>
+              <th style="width: 7%;">#</th>
+              <th style="width: 25%;">名字</th>
+              <th>Sans值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3">无数据</td>
+            </tr>
+            <!-- <tr>
+              <td>1</td>
+              <td>滑稽</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>滑稽</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>滑稽</td>
+              <td>100</td>
+            </tr> -->
+          </tbody>
+        </table>
+        <h5 class="grouptitle">改名<button id="clear-alias" class="clear-button">清空</button></h5>
+        <table id="alias">
+          <thead>
+            <tr>
+              <th style="width: 7%;">#</th>
+              <th style="width: 25%;">名字</th>
+              <th>改名</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3">无数据</td>
+            </tr>
+            <!-- <tr>
+              <td>1</td>
+              <td>滑稽</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>滑稽</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>滑稽</td>
+              <td>100</td>
+            </tr> -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script type="text/javascript" src="https://ngld.github.io/OverlayPlugin/assets/shared/common.min.js"></script>
+    <script>
+      const defaultConfig = {
+        serverport: 2333,
+        channelWritelist: ['说话', '呼喊', '喊话', '默语', '私聊'],
+        outputChannel: '说话'
+      }
+
+      const formElement = document.getElementById("config-form")
+      const serverportInputElement = document.getElementById("serverport");
+      const outputchannelInputElement = document.getElementById("output-channel");
+      const testconnectButtonElement = document.getElementById("test-connect");
+      const clearaliasButtonElement = document.getElementById("clear-alias");
+      const clearsanButtonElement = document.getElementById("clear-san");
+      const enablechannelElements = {
+        '说话': document.getElementById('allow-s'),
+        '小队': document.getElementById('allow-p'),
+        '呼喊': document.getElementById('allow-y'),
+        '喊话': document.getElementById('allow-sh'),
+        '部队': document.getElementById('allow-fc'),
+        '默语': document.getElementById('allow-e'),
+        '私聊': document.getElementById('allow-t')
+      };
+
+      function getConfig() {
+        let config = localStorage.getItem('goblin:config');
+        if (config) {
+          return JSON.parse(config);
+        }
+        return defaultConfig;
+      }
+
+      function saveConfig(config) {
+        localStorage.setItem('goblin:config', JSON.stringify(config));
+      }
+
+      function getSan(name) {
+        return +(getAllSan()[name] || 100);
+      }
+
+      function getAllSan() {
+        try {
+          return JSON.parse(localStorage.getItem('san') || '{}')
+        } catch (error) {
+          console.error(error.message);
+          return {};
+        }
+      }
+
+      function setSan(name, san) {
+        const sanobject = getAllSan();
+        sanobject[name] = san;
+        localStorage.setItem('san', JSON.stringify(sanobject))
+      }
+
+      function clearSan() {
+        localStorage.setItem('san', JSON.stringify({}))
+      }
+
+      function getAllAlias() {
+        try {
+          return JSON.parse(localStorage.getItem('alias') || '{}')
+        } catch (error) {
+          console.error(error.message);
+          return {};
+        }
+      }
+
+      function getAlias(name) {
+        return getAllAlias()[name] || name;
+      }
+
+      function setAlias(name, alias) {
+        const aliasobject = getAllAlias();
+        aliasobject[name] = alias;
+        localStorage.setItem('alias', JSON.stringify(aliasobject))
+      }
+
+      function clearAlias() {
+        localStorage.setItem('alias', JSON.stringify({}))
+      }
+
+      function renderSanTable() {
+        const tbody = document.querySelector('table#san tbody');
+        const sans = getAllSan();
+        const names = Reflect.ownKeys(sans);
+        if (names.length > 0){
+          const html = names.map((name, index) => {
+            return `<tr><td>${index + 1}</td><td>${getAlias(name)}</td><td>${sans[name]}</td></tr>`
+          }).join('');
+          tbody.innerHTML = html;
+        } else {
+          const html = `<tr><td colspan="3">无数据</td></tr>`;
+          tbody.innerHTML = html;
+        }
+      }
+
+      function renderAliasTable() {
+        const tbody = document.querySelector('table#alias tbody');
+        const alias = getAllAlias();
+        const names = Reflect.ownKeys(alias);
+        if (names.length > 0){
+          const html = names.map((name, index) => {
+            return `<tr><td>${index + 1}</td><td>${name}</td><td>${alias[name]}</td></tr>`
+          }).join('');
+          tbody.innerHTML = html;
+        } else {
+          const html = `<tr><td colspan="3">无数据</td></tr>`;
+          tbody.innerHTML = html;
+        }
+      }
+
+      function handleConfigChange() {
+        const channelWritelist = [];
+        Reflect.ownKeys(enablechannelElements).forEach(key => {
+          if (enablechannelElements[key].checked) {
+            channelWritelist.push(key);
+          }
+        })
+        const newConfig = {
+          serverport: +serverportInputElement.value || 2333,
+          channelWritelist: channelWritelist,
+          outputChannel: outputchannelInputElement.value
+        }
+
+        saveConfig(newConfig);
+      }
+
+      function initConfigElement() {
+        const config = getConfig();
+
+        serverportInputElement.value = config.serverport;
+
+        Reflect.ownKeys(enablechannelElements).forEach(key => {
+          const element = enablechannelElements[key];
+
+          if (config.channelWritelist.indexOf(key) !== -1) {
+            element.checked = true
+          } else {
+            element.checked = false
+          }
+        })
+
+        outputchannelInputElement.value = config.outputChannel;
+
+        formElement.addEventListener("change", handleConfigChange);
+        testconnectButtonElement.addEventListener("click", () => {
+          echoFFXIV('哥布林的骰子连接成功！');
+        });
+        clearsanButtonElement.addEventListener('click', () => {
+          clearSan();
+          renderSanTable();
+        })
+        clearaliasButtonElement.addEventListener('click', () => {
+          clearAlias();
+          renderAliasTable();
+          renderSanTable();
+        })
+      }
+
+      initConfigElement();
+      renderSanTable();
+      renderAliasTable();
+
+      const defaultExpression = 'd100'
+
+      let playername = null;
+
+      const cooldownChannel = ['说话', '呼喊', '喊话'];
+
+      const channelMap = {
+        '000a': '说话',
+        '000e': '小队',
+        '001e': '呼喊',
+        '000b': '喊话',
+        '0018': '部队',
+        '0038': '默语',
+        '000d': '私聊'
+      }
+
+      const channelCommand = {
+        '说话': '/s',
+        '小队': '/p',
+        '呼喊': '/y',
+        '喊话': '/sh',
+        '部队': '/fc',
+        '默语': '/e',
+        '私聊': '/tell'
+      }
+
+      function runFFXIVCommand(command) {
+        if (!command) return;
+        fetch(`http://127.0.0.1:${getConfig().serverport}/command`, {method: 'POST', body: command})
+          .then((res) => res.text())
+          .then((text) => console.log('result:' + text))
+          .catch(err => console.error(err));
+      }
+
+      const outputQueue = [];
+      let workerTimeout = null;
+      const delayTime = 1500;
+
+      function ouputWorkerCooldown() {
+        clearTimeout(workerTimeout);
+        workerTimeout = setTimeout(outputWorker, delayTime);
+      }
+
+      function outputWorker() {
+        if (outputQueue.length !== 0)
+          runFFXIVCommand(outputQueue.shift());
+
+        if (outputQueue.length > 0)
+          workerTimeout = setTimeout(outputWorker, delayTime);
+        else
+          workerTimeout = null;
+      }
+
+      function outputFFXIV(message) {
+        const channel = getConfig().outputChannel;
+        if (cooldownChannel.indexOf(channel) === -1)
+          runFFXIVCommand((channelCommand[channel] || '/s') + ' ' + message);
+        else {
+          outputQueue.push((channelCommand[channel] || '/s') + ' ' + message)
+          if (workerTimeout === null) {
+            outputWorker()
+          }
+        }
+      }
+
+      function replyFFXIV(message) {
+        runFFXIVCommand('/r ' + message);
+      }
+
+      function echoFFXIV(message) {
+        runFFXIVCommand('/e ' + message);
+      }
+
+      function rollExpression(expression) {
+        let [a, b] = expression.split("d");
+        a = +(a || 1);
+        b = +(b || 1);
+        const min = a;
+        const range = a * b - a + 1;
+        return Math.floor(Math.random() * range) + min;
+      }
+
+      addOverlayListener('ChangePrimaryPlayer', (data) => {
+        playername = data.charName;
+      });
+
+      addOverlayListener('LogLine', (data) => {
+        const line = data.line;
+        if (line[0] != '00') return;
+        const channelID = line[2];
+        const channelName = channelMap[channelID] || channelID;
+
+        let username = line[3];
+        if (username) {
+          username = username.replace(/[\uE090-\uE098]/g, "")
+        }
+        if (channelName == "默语") {
+          username = playername;
+        }
+        const message = line[4];
+
+        if (cooldownChannel.indexOf(channelName) !== -1 && username === playername) {
+          ouputWorkerCooldown();
+        }
+
+        console.log(`[${channelName}]${username ? username + ':' : ''}${message}`);
+
+        if (getConfig().channelWritelist.indexOf(channelName) == -1) return;
+
+        const rhCommand = /(\.|。)rh( )*(?<expression>[0-9]+d[0-9]+)?( )*(?<name>[\w\u4E00-\u9fa5\uF900-\uFA2D]+)?/g.exec(message)
+        if (rhCommand) {
+          const name = rhCommand.groups.name;
+          const expression = rhCommand.groups.expression || defaultExpression;
+          if (channelName === '私聊') {
+            replyFFXIV(`${getAlias(username)} ${name ? name + ': ' : ''}${expression}=${rollExpression(expression)}`)
+            outputFFXIV(`${getAlias(username)} 进行了一次暗骰`);
+          } else if (channelName === '默语') {
+            echoFFXIV(`${getAlias(username)} ${name ? name + ': ' : ''}${expression}=${rollExpression(expression)}`)
+            outputFFXIV(`${getAlias(username)} 进行了一次暗骰`);
+          }
+          return;
+        }
+
+        // roll
+        const rollCommand = /(\.|。)r( )*(?<expression>[0-9]+d[0-9]+)?( )*(?<name>[\w\u4E00-\u9fa5\uF900-\uFA2D]+)?/g.exec(message)
+        if (rollCommand) {
+          const name = rollCommand.groups.name;
+          const expression = rollCommand.groups.expression || defaultExpression;
+
+          outputFFXIV(`${getAlias(username)} ${name ? name + ': ' : ''}${expression}=${rollExpression(expression)}`);
+          return;
+        }
+
+        // sc
+        const scCommand = /(\.|。)sc( )*(?<success>[0-9d]+)\/(?<fail>[0-9d]+)( (?<init>[0-9]+))?/g.exec(message)
+        if (scCommand) {
+          const expression = defaultExpression;
+          const san = typeof scCommand.groups.init !== 'undefined' ? +scCommand.groups.init : getSan(username);
+          const value = rollExpression(defaultExpression);
+          const is = value <= san;
+          const cutExpression = is ? scCommand.groups.success : scCommand.groups.fail;
+          const cutValue = cutExpression.indexOf('d') != -1 ? rollExpression(cutExpression) : +cutExpression;
+          const finalsan = san - cutValue;
+          setSan(username, finalsan);
+          renderSanTable();
+
+          outputFFXIV(`${getAlias(username)}的San Check: ${expression}=${value} ${is ? "成功" : "失败"} ` +
+            `${getAlias(username)}的San值减少${cutExpression.indexOf('d') != -1 ? cutExpression + '=' + cutValue : cutValue}点,当前剩余${finalsan}点`);
+          return;
+        }
+
+        // stsan
+        const stsanCommand = /(\.|。)stsan( )*(?<value>[0-9]+)/g.exec(message)
+        if (stsanCommand) {
+          const value = +stsanCommand.groups.value;
+          setSan(username, value);
+          renderSanTable();
+          outputFFXIV(`${getAlias(username)}的属性设置成功`);
+          return;
+        }
+
+        // nn
+        const nnCommand = /(\.|。)nn( )*(?<alias>[\w\u4E00-\u9fa5\uF900-\uFA2D ]+)/g.exec(message)
+        if (nnCommand) {
+          const alias = nnCommand.groups.alias;
+          if (alias) {
+            setAlias(username, alias);
+            renderAliasTable();
+            renderSanTable();
+            outputFFXIV(`${username}的名称更改为${alias}!`);
+          }
+          return;
+        }
+      });
+      startOverlayEvents();
+    </script>
+  </body>
+</html>
